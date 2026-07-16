@@ -81,7 +81,7 @@ onMounted(async () => {
   <section class="hero-section">
     <div class="hero-copy">
       <span class="eyebrow">공공데이터 기반 지역 정보 공유 커뮤니티</span>
-      <h1>LocalHub 구미/경북</h1>
+      <h1> 구미/경북</h1>
       <p>관광지, 음식점, 축제 정보를 한곳에서 보고 익명 게시판으로 지역 이야기를 나눕니다.</p>
       <div class="hero-actions">
         <RouterLink class="primary-button" to="/places">지역 정보 보기</RouterLink>

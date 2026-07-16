@@ -121,7 +121,7 @@ onMounted(async () => {
     <span class="eyebrow">선택 기능</span>
     <h1>축제 캘린더</h1>
     <p>
-      구미/경북 축제공연행사 JSON의 시작일과 종료일을
+      구미/경북 축제공연행사 일정을
       월별 달력으로 보여줍니다.
     </p>
   </section>
