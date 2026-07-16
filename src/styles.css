@@ -582,9 +582,21 @@ dd {
   white-space: nowrap;
 }
 
-.festival-detail {
+.festival-detail-list {
+  display: grid;
+  gap: 24px;
+  align-self: start;
   position: sticky;
   top: 92px;
+}
+
+.festival-detail {
+  position: static;
+}
+
+.calendar-day .more-events {
+  color: #53635f;
+  font-weight: 900;
 }
 
 .festival-detail img {
