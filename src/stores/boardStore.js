@@ -1,5 +1,6 @@
 const POSTS_KEY = 'localhub_posts';
 const BOOKMARKS_KEY = 'localhub_bookmarks';
+const READ_POSTS_KEY = 'localhub_read_posts';
 
 function readJson(key, fallback) {
   try {
@@ -191,7 +192,28 @@ export function getPosts() {
     posts = seedPosts();
     writeJson(POSTS_KEY, posts);
   }
-  return posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const readPosts = getReadPosts();
+  return posts
+    .map((post) => ({
+      ...post,
+      liked: Boolean(post.liked),
+      read: readPosts.includes(post.id),
+    }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+export function getReadPosts() {
+  return readJson(READ_POSTS_KEY, []);
+}
+
+export function markPostAsRead(id) {
+  const readPosts = getReadPosts();
+  if (readPosts.includes(id)) return readPosts;
+
+  const next = [...readPosts, id];
+  writeJson(READ_POSTS_KEY, next);
+  return next;
 }
 
 export function getPost(id) {
@@ -203,9 +225,16 @@ export function savePost(payload, id = null) {
   const now = new Date().toISOString();
 
   if (id) {
+    const existing = posts.find((post) => post.id === id);
     const next = posts.map((post) =>
       post.id === id
-        ? { ...post, title: payload.title, content: payload.content, password: payload.password, updatedAt: now }
+        ? {
+            ...post,
+            title: payload.title,
+            content: payload.content,
+            password: existing?.password || payload.password,
+            updatedAt: now,
+          }
         : post,
     );
     writeJson(POSTS_KEY, next);
@@ -230,6 +259,7 @@ export function savePost(payload, id = null) {
 export function deletePost(id, password) {
   const post = getPost(id);
   if (!post || post.password !== password) return false;
+
   writeJson(
     POSTS_KEY,
     getPosts().filter((item) => item.id !== id),
@@ -253,12 +283,11 @@ export function likePost(id) {
   const next = posts.map((post) => {
     if (post.id !== id) return post;
 
-    const liked = Boolean(post.liked ?? false);
-
+    const isLiked = Boolean(post.liked);
     return {
       ...post,
-      liked: !liked,
-      likes: Math.max(0, Number(post.likes || 0) + (liked ? -1 : 1)),
+      liked: !isLiked,
+      likes: Math.max(0, Number(post.likes || 0) + (isLiked ? -1 : 1)),
     };
   });
 
